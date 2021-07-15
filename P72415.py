@@ -2,6 +2,7 @@ from collections import deque
 from itertools import permutations
 import copy
 
+answer = 9999
 q = deque()
 def bfs (sr,sc, dr, dc, board):
     visited = [[0 for col in range(4)] for row in range(4)]
@@ -17,10 +18,9 @@ def bfs (sr,sc, dr, dc, board):
         for di in dir:
             x, y = min(3, max(0, a + di[0])), min(3, max(0, b + di[1]))
             des.append((x, y))
-
         for i in range(1, 4):
             if a == 3:
-                des.append((a,b))
+                des.append((a, b))
                 break
             if a + i == 3 or board[a+i][b]:
                 des.append((a+i, b))
@@ -55,56 +55,42 @@ def bfs (sr,sc, dr, dc, board):
         q.pop()
     return [dr, dc, visited[dr][dc]]
 
+def req(a,b ,index, nums, board, dic, case):
+    case0 = case
+    o = copy.deepcopy(board)
+    global answer
+    if index == len(nums):
+        answer = min(answer, case)
+        return
+    pos_list = dic[nums[index]]
+    case += bfs(a, b, pos_list[0][0], pos_list[0][1], board)[2]
+    case += bfs(pos_list[0][0], pos_list[0][1], pos_list[1][0], pos_list[1][1], board)[2]
+    board[pos_list[0][0]][pos_list[0][1]], board[pos_list[1][0]][pos_list[1][1]] = 0, 0
+    req(pos_list[1][0], pos_list[1][1], index+1, nums, board, dic, case)
+
+    case = case0
+    board = copy.deepcopy(o)
+
+    case += bfs(a, b, pos_list[1][0], pos_list[1][1], board)[2]
+    case += bfs(pos_list[1][0], pos_list[1][1], pos_list[0][0], pos_list[0][1], board)[2]
+    board[pos_list[0][0]][pos_list[0][1]], board[pos_list[1][0]][pos_list[1][1]] = 0, 0
+    req(pos_list[0][0], pos_list[0][1], index+1, nums, board, dic, case)
+
 def solution(board, r, c):
     o = copy.deepcopy(board)
+    global answer
+    dic = {}
     answer = 9999
     nums = []
     for i in range(4):
         for j in range(4):
             if board[i][j]:
-                nums.append((board[i][j],i,j))
-    nums.sort()
-    lis = []
-    print(nums)
-    for i in range(0, len(nums)-1, 2):
-        lis.append((nums[i], nums[i+1]))
-        lis.append((nums[i+1], nums[i]))
-    print(lis)
-
-    perm = list(permutations(lis, len(lis)//2))
-    print(perm)
-    # print(perm)
-    # for p1 in perm:
-    #     board = copy.deepcopy(o)
-    #     case1, case2 = 0, 0
-    #     a, b = r, c
-    #     for p2 in p1:
-    #         des = []
-    #         for i in range(4):
-    #             for j in range(4):
-    #                 if board[i][j] == p2:
-    #                     des.append((i, j))
-    #         res1 = bfs(a, b, des[0][0], des[0][1], board)
-    #         case1 += res1[2]
-    #         res2 = bfs(res1[0], res1[1], des[1][0], des[1][1], board)
-    #         case1 += res2[2]
-    #
-    #         res3 = bfs(a, b, des[1][0], des[1][1], board)
-    #         case2 += res3[2]
-    #         res4 = bfs(res3[0], res3[1], des[0][0], des[0][1], board)
-    #         case2 += res4[2]
-    #         board[des[1][0]][des[1][1]] = 0
-    #         board[des[0][0]][des[0][1]] = 0
-    #
-    #         if case1 > case2:
-    #             a, b = res4[0], res4[1]
-    #             case1 = case2
-    #         else:
-    #             a, b = res2[0], res2[1]
-    #             case2 = case1
-    #     answer = min(answer, case1, case2)
-
+                if board[i][j] not in dic:
+                    nums.append(board[i][j])
+                    dic[board[i][j]] = []
+                dic[board[i][j]].append((i, j))
+    perm = list(permutations(nums, len(nums)))
+    for p1 in perm:
+        req(r, c, 0, p1, board, dic, 0)
+        board = copy.deepcopy(o)
     return answer
-
-
-#solution([[1,0,0,3],[2,0,0,0],[0,0,0,2],[3,0,1,0]],1,0)
