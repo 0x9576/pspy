@@ -14,7 +14,7 @@ def solution(n, weak, dist):
             sub_q = deque(queue)
             start = sub_q.popleft()
             front_dis = sub_dq.popleft()
-            while sub_q and sub_dq:
+            while sub_q and (sub_dq or front_dis):
                 if i == 1:
                     distance = sub_q[0] - start
                 else:
@@ -24,7 +24,10 @@ def solution(n, weak, dist):
                 if distance <= front_dis:
                     front_dis -= distance
                 else:
-                    front_dis = sub_dq.popleft()
+                    if sub_dq:
+                        front_dis = sub_dq.popleft()
+                    else:
+                        break
                 start = sub_q.popleft()
             if not sub_q:
                 answer = min(answer, len(dist) - len(sub_dq))
