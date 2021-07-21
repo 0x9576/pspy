@@ -1,12 +1,15 @@
+def find_room(dic, want):
+    if want not in dic:
+        dic[want] = want + 1
+        return want
+    alter = find_room(dic, dic[want])
+    dic[want] = alter + 1
+    return alter
+
 def solution(k, room_number):
     answer = []
-    lis = [0 for _ in range(k+1)]
+    dic = {}
     for rn in room_number:
-        if lis[rn] == 1:
-            for i in range(rn+1, k):
-                if lis[i] == 0:
-                    rn = i
-                    break
-        lis[rn] = 1
-        answer.append(rn)
+        room = find_room(dic, rn)
+        answer.append(room)
     return answer
