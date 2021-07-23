@@ -1,3 +1,32 @@
+from itertools import permutations
+
+def solution(n, weak, dist):
+    wl = len(weak)
+    answer = len(dist) + 2
+    for i in range(wl):
+        weak.append(weak[i]+n)
+    dist_perm = list(permutations(dist, len(dist)))
+
+    for i in range(wl):  # i는 스타팅 지점
+        for dist_tup in dist_perm:
+            idx = 0
+            possible = weak[i] + dist_tup[idx]
+            flag = True
+            for j in range(i, wl+i):
+                if possible < weak[j]:
+                    if idx >= len(dist_tup)-1:
+                        flag = False
+                        break
+                    idx += 1
+                    possible = weak[j] + dist_tup[idx]
+            if flag:
+                answer = min(answer, idx+1)
+    if answer > len(dist):
+        answer = -1
+    return answer
+
+
+"""
 from collections import deque
 
 def solution(n, weak, dist):
@@ -36,3 +65,4 @@ def solution(n, weak, dist):
     if answer == 9999:
         answer = -1
     return answer
+"""
