@@ -1,11 +1,20 @@
-import sys
-A, B, V = map(int,sys.stdin.readline().split())
-left, right = 0, V + 1
-while left <= right:
-    mid = (right + left) // 2
-    if (A-B) * (mid-1) + A >= V:
-        right -= 1
-        answer = mid
-    else:
-        left += 1
-print(mid)
+import heapq
+from collections import deque
+
+def solution(jobs):
+    answer,time = 0, 0
+    jobs.sort()
+    hq = []
+    size = len(jobs)
+    jobs = deque(jobs)
+    while jobs or hq:
+        while jobs and time >= jobs[0][0]:
+            front = jobs.popleft()
+            heapq.heappush(hq, (front[1], front[0]))
+        if hq:
+            hq_front = heapq.heappop(hq)
+            answer += hq_front[0]+time-hq_front[1]
+            time += hq_front[0]
+        else:
+            time += 1
+    return int(answer / float(size))
