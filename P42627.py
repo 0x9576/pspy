@@ -1,27 +1,23 @@
 import heapq
+from collections import deque
 
 def solution(jobs):
-    hq = []
     answer = 0
-    idx, time,complete = 0, 0, 0
-    l = len(jobs)
-    while idx < l or hq:
-        while idx < l and jobs[idx][0] == time:
-            jl = jobs[idx]
-            heapq.heappush(hq, (jl[1], jl[0]))
-            idx += 1
-        if idx == l:
-            while hq:
-                time = complete
-                top = heapq.heappop(hq)
-                complete = time + top[0]
-                answer += complete - top[1]
-            break
-        if complete == time and hq:
-            top = heapq.heappop(hq)
-            complete = time + top[0]
-            answer += complete - top[1]
-        time += 1
-
-    answer = answer /  float(l)
-    return int(answer)
+    jobs.sort()
+    hq = jobs
+    jobs = deque(jobs)
+    print(hq)
+    print(jobs[0][0])
+    while jobs:
+        while answer >= jobs[0][0]:
+            front = jobs.popleft()
+            heapq.heappush(hq, (front[1], front[0]))
+        if hq:
+            hq_front = heapq.heappop(hq)
+            answer += hq_front[0]
+        else:
+            answer += 1
+    while hq:
+        hq_front = heapq.heappop(hq)
+        answer += hq_front[0]
+    return answer
