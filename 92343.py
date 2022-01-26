@@ -1,34 +1,41 @@
+import copy
 answer = 0
 
 
 def solution(info, edges):
-    edges_dict = {}
-    accessible_set = set()
-    accessible_set.add(0)
+    edges_list = []
+    for i in range(100):
+        edges_list.append([])
+    # accessible_list는 현재 갈 수 있는 노드의 리스트를 저장함.
+    accessible_list = [0]
+    # edges_list는 해당 노드에서 갈 수 있는 노드의 리스트를 저장함.
     for edge in edges:
-        if edge[0] not in edges_dict:
-            edges_dict[edge[0]] = []
-        edges_dict[edge[0]].append(edge[1])
-    for root_child in edges_dict[0]:
-        accessible_set.add(root_child)
-    print(accessible_set)
-    find(0, edges_dict, info, accessible_set, 0)
+        edges_list[edge[0]].append(edge[1])
+    for root_child in edges_list[0]:
+        accessible_list.append(root_child)
+    # 시작점은 0(root)임
+    find(0, edges_list, info, accessible_list, 0, 0)
     return answer
 
 
-def find(start, edges_dict, info, accessible_set, score):
+def find(start, edges_list, info, accessible_list, sheep, wolf):
+    accessible_list.remove(start)
     global answer
+    # 늑대 및 양 추가
     if info[start] == 0:
-        score += 1
+        sheep += 1
     else:
-        score -= 1
-    if score <= 0:
+        wolf += 1
+    if sheep <= wolf:
         return
-    answer = max(answer, score)
-    accessible_set.remove(start)
-    for destination in edges_dict[start]:
-        accessible_set.add(destination)
-    for start in accessible_set:
-        find(start, edges_dict, info, accessible_set, score)
-
-solution([0,0,1,1,1,0,1,0,1,0,1,1], [[0,1],[1,2],[1,4],[0,8],[8,7],[9,10],[9,11],[4,3],[6,5],[4,6],[8,9]])
+    # answer = 최대로 모을 수 있는 양의 마릿수
+    answer = max(answer, sheep)
+    # 지금 노드에서 갈 수 있는 노드를 추가
+    for destination in edges_list[start]:
+        if destination not in accessible_list:
+            accessible_list.append(destination)
+    # 갈 수 있는 모든 노드에 하나씩 접근함.
+    for s in accessible_list:
+        # deepcopy를 써서 리스트의 얕은복사를 막음
+        new_list = copy.deepcopy(accessible_list)
+        find(s, edges_list, info, new_list, sheep, wolf)
