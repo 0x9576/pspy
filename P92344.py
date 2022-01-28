@@ -4,8 +4,12 @@ def solution(board, skill):
     arr = [[0 for c in range(len(board[0])+1)] for r in range(len(board)+1)]
     for s in skill:
         point(arr, s)
+    # 가중합 만들기
     cal(arr)
-    sum_arr(board, arr)
+    # 두개의 배열합을 board에 저장
+    for i in range(len(arr)-1):
+        for j in range(len(arr[0])-1):
+            board[i][j] += arr[i][j]
     for b_list in board:
         for b in b_list:
             if b > 0:
@@ -34,12 +38,3 @@ def cal(arr):
     for j in range(0, len(arr[0])):
         for i in range(1, len(arr)):
             arr[i][j] += arr[i-1][j]
-
-
-def sum_arr(arr, board):
-    # 두개의 배열 요소의 합을 board에 저장
-    for i in range(len(arr)-1):
-        for j in range(len(arr[0])-1):
-            board[i][j] += arr[i][j]
-
-solution([[5,5,5,5,5],[5,5,5,5,5],[5,5,5,5,5],[5,5,5,5,5]], [[1,0,0,3,4,4],[1,2,0,2,3,2],[2,1,0,3,1,2],[1,0,1,3,3,1]])
