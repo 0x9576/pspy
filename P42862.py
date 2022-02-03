@@ -9,7 +9,7 @@ def solution(n, lost, reserve):
             del_list.append(l)
             n+=1
     for dl in del_list:
-        del lost[reserve.index(dl)]
+        del lost[lost.index(dl)]
     for l in lost:
         los = [l-1,l+1]
         for lo in los:
